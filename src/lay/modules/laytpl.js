@@ -11,6 +11,7 @@ layui.define(function(exports){
   "use strict";
 
   var config = {
+    destructuring: false, //参数解构配置
     open: '{{',
     close: '}}'
   };
@@ -84,8 +85,16 @@ layui.define(function(exports){
       }
       return start + str.replace(/\\/g, '') + ')+"';
     });
-    
-    tpl = '"use strict";var view = "' + tpl + '";return view;';
+   
+    if (config.destructuring){ //解构实现
+      var _tpl = '"use strict";var _ref = d,';
+    for (var attr in data){
+      _tpl += attr + ' = _ref.' + attr + ',';
+    }
+      tpl = _tpl + 'view = "' + tpl + '";return view;';
+    }else{
+      tpl = '"use strict";var view = "' + tpl + '";return view;';
+    }
 
     try{
       that.cache = tpl = new Function('d, _escape_', tpl);
